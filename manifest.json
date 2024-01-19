@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Tóth Gabi Content Blocker",
-  "version": "1.4.3",
-  "description": "A kiterjesztés eltávolítja a Tóth Gabi tartalmakat a magyar (*.hu) oldalakról.",
+  "name": "OnlyGabi Content Focuser",
+  "version": "1.5.0",
+  "description": "A kiterjesztés eltávolít minden nem Tóth Gabival kapcsolatos tartalmat a magyar oldalakról (*.hu).",
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
