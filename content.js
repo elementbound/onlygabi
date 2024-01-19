@@ -1,36 +1,59 @@
-function removeContentBasedOnTextAndImages() {
-  // text content search
-  const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a');
-  textElements.forEach(element => {
-	let textMatch = element.textContent.includes('Tóth Gabi') || element.textContent.includes('Gabi Tóth');
-	let hrefMatch = element.tagName === 'A' && (element.href.includes('toth_gabi') || element.href.includes('toth-gabi') || element.href.includes('tothgabi') || element.href.includes('toth_gabi') || element.href.includes('Toth_Gabi'));
-	let titleMatch = element.title.includes('toth_gabi') || element.title.includes('toth-gabi') || element.title.includes('tothgabi') || element.title.includes('toth_gabi') || element.title.includes('Toth_Gabi')
-    if (textMatch || hrefMatch) { // titleMatch is talán...
-      let closestDiv = element.closest('div');
-      if (closestDiv) {
-        closestDiv.style.display = 'none';
-        // hide closest pictures
-        const relatedImages = closestDiv.querySelectorAll('img');
-        relatedImages.forEach(img => {
-          img.style.display = 'none';
-        });
-      }
+function gatherG$bi() {
+  if (window.location.host.includes('tothgabi'))
+    return [...document.querySelectorAll('*')]
+
+  const slugs = ['toth_gabi', 'toth-gabi', 'tothgabi']
+
+  const filters = [
+    e => e.textContent.toLowerCase().includes('tóth gabi') || e.textContent.toLowerCase().includes('gabi tóth'),
+    e => slugs.some(slug => e.title?.toLowerCase().includes(slug))
+  ]
+
+  return [...document.querySelectorAll('*')]
+    .filter(e => e.childElementCount === 0)
+    .filter(e => filters.some(f => f(e)))
+}
+
+function highlightG$bi() {
+  gatherG$bi()
+    .map(g$bi => g$bi.closest('div'))
+    .filter(div => !!div)
+    .forEach(div => div.style.border = '4px solid green')
+}
+
+function onlyG$bi() {
+  const g$biElements = gatherG$bi()
+
+  const allElems = [...document.querySelectorAll('*')];
+
+  allElems.forEach(element => element.style.opacity = '0')
+
+  for (const g$bi of g$biElements) {
+    let at = g$bi
+    while (at) {
+      at.style.opacity = '1'
+      at = at.parentElement
     }
-  });  
+  }
 }
 
 chrome.storage.local.get('isTGExtensionActive', function(data) {
-  if(data.isTGExtensionActive !== false) {
-    removeContentBasedOnTextAndImages();
+  // const operation = highlightG$bi
+  const operation = onlyG$bi
+  if (data.isTGExtensionActive !== false) {
+    operation.call()
 
     // MutationObserver DOM change agent
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
-        removeContentBasedOnTextAndImages();
+        operation.call()
       });
     });
 
     // Start observing
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
   }
 });
